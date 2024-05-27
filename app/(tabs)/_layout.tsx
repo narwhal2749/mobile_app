@@ -23,6 +23,15 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="form"
+        options={{
+          title: 'Fill form',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'document' : 'document-outline'} color={color} />
+          ),
+        }}
+      />
     </Tabs>
   );
 }

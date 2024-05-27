@@ -1,10 +1,16 @@
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { BarcodeScanningResult, CameraView, useCameraPermissions } from 'expo-camera';
 import { CameraType } from 'expo-camera/build/legacy/Camera.types';
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Button, StyleSheet, Text, View } from 'react-native';
+import { useWorkstation } from '../WorkstationProvider';
+import { useState } from 'react';
+import { useRouter } from 'expo-router';
 
 export default function App() {
   const [permission, requestPermission] = useCameraPermissions();
-
+  const {fetchWorkstation} = useWorkstation();
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  
   if (!permission) {
     return <View />;
   }
@@ -18,12 +24,27 @@ export default function App() {
     );
   }
 
+  const handleBarcodeScanned = async (scannedData: BarcodeScanningResult) => {
+    setLoading(true);
+    try {
+      await fetchWorkstation(scannedData.data);
+      setLoading(false);
+      router.push('form'); 
+    } catch (error) {
+      setLoading(false);
+      console.error('Error fetching workstation:', error);
+    }
+  }
 
   return (
     <View style={styles.container}>
-      <CameraView style={styles.camera} facing={CameraType.back}>
-        <View style={styles.buttonContainer} />
-      </CameraView>
+      {loading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <CameraView style={styles.camera} facing={CameraType.back} onBarcodeScanned={handleBarcodeScanned}>
+          <View style={styles.buttonContainer} />
+        </CameraView>
+      )}
     </View>
   );
 }
