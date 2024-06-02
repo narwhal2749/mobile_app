@@ -25,6 +25,7 @@ export default function App() {
   }
 
   const handleBarcodeScanned = async (scannedData: BarcodeScanningResult) => {
+    console.log("url", scannedData.data);
     setLoading(true);
     try {
       await fetchWorkstation(scannedData.data);
