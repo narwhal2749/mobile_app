@@ -1,137 +1,74 @@
-import { Button, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useWorkstation } from '../WorkstationProvider';
-import { Controller, useForm } from 'react-hook-form';
-import { Picker } from '@react-native-picker/picker';
-import { RadioButton } from 'react-native-paper';
-import { AnswerTypes, PossibleAnswer } from '../domain/Question';
+import { useForm } from 'react-hook-form';
+import { AnswerTypes } from '../domain/Question';
+import { TextQuestion } from '@/components/form/TextQuestion';
+import { BooleanQuestion } from '@/components/form/BooleanQuestion';
+import { MultipleChoiceQuestion } from '@/components/form/MultipleChoiceQuestion';
+import { BasePage } from '@/components/BasePage';
 
 export default function Form() {
   const {workstation} = useWorkstation();
   const { control, handleSubmit } = useForm();
 
-
   const onSubmit = (data: any) => {
     console.log('Form Data:', data);
   };
-  console.log('workstation', workstation?.questions);
 
+  const displayName = `${workstation?.code} - ${workstation?.name}`;
   return (
-    <View style={styles.wrapper}>
+    <BasePage darkStatusBar>
+      <Text style={styles.displayName}>{displayName}</Text>
       <ScrollView contentContainerStyle={styles.container}>
         {workstation?.questions?.map((item) => {
           const { possible_answers, ...question } = item;
           return (
             <View key={question.id} style={styles.questionContainer}>
               <Text style={styles.questionTitle}>{question.title}</Text>
-              {question.answer_type === AnswerTypes.TEXT && (
+              {question.answer_type.toString() === AnswerTypes.TEXT && (
                 <TextQuestion control={control} questionId={question.id} />
               )}
               {question.answer_type === AnswerTypes.YES_NO && (
                 <BooleanQuestion control={control} questionId={question.id} />
               )}
               {question.answer_type === AnswerTypes.MULTIPLE_CHOICE && (
-                <MultipleChoiceQuestion control={control} questionId={question.id} possibleAnswers={possible_answers ?? []}/>
+                <MultipleChoiceQuestion control={control} questionId={question.id} possibleAnswers={possible_answers ?? []} />
               )}
             </View>
           );
         })}
-          <Button onPress={handleSubmit(onSubmit)} title="Submit" />
       </ScrollView>
-    </View>
+
+      <View>
+        <Button onPress={handleSubmit(onSubmit)} title="Submit" />
+      </View>
+    </BasePage>
   );
 }
 
-const TextQuestion = ({control, questionId}: {control: any, questionId: string}) => {
-  return (
-    <Controller
-      control={control}
-      name={questionId}
-      render={({ field: { onChange, onBlur, value } }) => (
-        <TextInput
-          onBlur={onBlur}
-          onChangeText={onChange}
-          value={value}
-          style={styles.input}
-        />
-      )}
-    />
-  )
-}
-
-const BooleanQuestion = ({control, questionId}: {control: any, questionId: string}) => {
-  return (
-    <Controller
-      control={control}
-      name={questionId}
-      render={({ field: { onChange, value } }) => (
-        <RadioButton.Group
-          onValueChange={onChange}
-          value={value}
-        >
-          <View style={styles.radioButtonContainer}>
-            <RadioButton value="yes" />
-            <Text>Yes</Text>
-            <RadioButton value="no" />
-            <Text>No</Text>
-          </View>
-        </RadioButton.Group>
-      )}
-    />
-  )
-}
-
-const MultipleChoiceQuestion = ({control, questionId, possibleAnswers}: {control: any, questionId: string,  possibleAnswers: PossibleAnswer[]}) => {
-  return (
-    <Controller
-      control={control}
-      name={questionId}
-      render={({ field: { onChange, value } }) => (
-        <Picker
-          selectedValue={value}
-          onValueChange={onChange}
-          style={styles.picker}
-        >
-          {possibleAnswers.map((answer) => (
-            <Picker.Item key={answer.id} label={answer.answer} value={answer.id} />
-          ))}
-        </Picker>
-      )}
-    />
-  )
-}
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: '#fff',
+  displayName: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
   },
   container: {
-    padding: 16,
+    paddingBottom: 16,
   },
   questionContainer: {
     marginBottom: 16,
-    backgroundColor: '#7f7f7f',
+    backgroundColor: '#fff',
+    borderColor: '#000',
+    borderWidth: 1,
     padding: 16,
     borderRadius: 8,
   },
   questionTitle: {
     marginBottom: 8,
     fontWeight: 'bold',
-    color: '#fff',
-  },
-  input: {
-    marginBottom: 8,
-    padding: 8,
-    backgroundColor: '#fff',
-    borderRadius: 4,
-    borderColor: '#ccc',
-    borderWidth: 1,
-  },
-  radioButtonContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  picker: {
-    height: 50,
-    width: '100%',
+    color: '#000',
+    flex: 1,
+    flexWrap: 'wrap',
+    marginRight: 8,
   },
 });

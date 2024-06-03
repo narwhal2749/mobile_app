@@ -1,6 +1,7 @@
 import React, { PropsWithChildren, createContext, useContext } from 'react';
 import { Workstation } from './domain/Workstation';
 import { useAxios } from './HttpProvider';
+import { assembleWorkstation } from './WorkstationAssembler';
 
 interface WorkstationProviderProps {
   workstation?: Workstation;
@@ -21,8 +22,9 @@ export const useWorkstation = () => {
     const correctedUrl = url.replace("http://localhost:5000", localIP);
 
     try {
-      const response = await queryClient.get<Workstation>(correctedUrl);
-      workstationContext.workstation = response.data;
+      const response = await queryClient.get(correctedUrl);
+      const workstations = assembleWorkstation(response.data);
+      workstationContext.workstation = workstations;
     } catch (error) {
       console.error('Error fetching workstation:', error);
     }
