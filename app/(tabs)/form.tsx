@@ -1,4 +1,4 @@
-import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useWorkstation } from '../WorkstationProvider';
 import { useForm } from 'react-hook-form';
 import { AnswerTypes } from '../domain/Question';
@@ -6,13 +6,36 @@ import { TextQuestion } from '@/components/form/TextQuestion';
 import { BooleanQuestion } from '@/components/form/BooleanQuestion';
 import { MultipleChoiceQuestion } from '@/components/form/MultipleChoiceQuestion';
 import { BasePage } from '@/components/BasePage';
+import { useEffect, useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { UserData } from './settings';
 
 export default function Form() {
   const {workstation} = useWorkstation();
   const { control, handleSubmit } = useForm();
+  const [userData, setUserData] = useState<UserData>({firstName: '', lastName: ''});
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const firstName = await AsyncStorage.getItem('firstName');
+        const lastName = await AsyncStorage.getItem('lastName');
+        setUserData({firstName: firstName ?? '', lastName: lastName ?? ''});
+      } catch (e: any) {
+        Alert.alert('Failed to load data', e);
+      }
+    };
+
+    loadData();
+  }, []);
 
   const onSubmit = (data: any) => {
-    console.log('Form Data:', data);
+    const submittedData = {
+      ...userData,
+      date: new Date().toISOString(),
+      ...data,
+    };
+    console.log('Form Data:', submittedData);
   };
 
   const displayName = `${workstation?.code} - ${workstation?.name}`;
