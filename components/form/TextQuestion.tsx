@@ -1,7 +1,9 @@
-import { Controller } from "react-hook-form"
+import { Controller, useFormContext } from "react-hook-form"
 import { TextInput, StyleSheet } from "react-native"
 
-export const TextQuestion = ({control, questionId}: {control: any, questionId: string}) => {
+export const TextQuestion = ({questionId}: {questionId: string}) => {
+  const { control } = useFormContext();
+
   return (
     <Controller
       control={control}

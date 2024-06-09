@@ -1,7 +1,7 @@
 import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useWorkstation } from '../WorkstationProvider';
-import { useForm } from 'react-hook-form';
-import { AnswerTypes } from '../domain/Question';
+import { FormProvider, useForm } from 'react-hook-form';
+import { AnswerTypes, SubQuestion } from '../domain/Question';
 import { TextQuestion } from '@/components/form/TextQuestion';
 import { BooleanQuestion } from '@/components/form/BooleanQuestion';
 import { MultipleChoiceQuestion } from '@/components/form/MultipleChoiceQuestion';
@@ -9,10 +9,12 @@ import { BasePage } from '@/components/BasePage';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserData } from './settings';
+import { GroupQuestion } from '@/components/form/GroupQuestion';
 
 export default function Form() {
   const {workstation} = useWorkstation();
-  const { control, handleSubmit } = useForm();
+  const methods = useForm();
+  const { handleSubmit } = methods;
   const [userData, setUserData] = useState<UserData>({firstName: '', lastName: ''});
 
   useEffect(() => {
@@ -29,11 +31,31 @@ export default function Form() {
     loadData();
   }, []);
 
+  const transformGroupData = (data: any, subQuestions: SubQuestion[]) => {
+    return data.map((group: any) => {
+      const transformedGroup: any = {};
+      subQuestions.forEach((subQuestion) => {
+        transformedGroup[subQuestion.id] = {id: subQuestion.id, answer: group[subQuestion.id]};
+        console.log("res t", transformedGroup[subQuestion.id]);
+
+      });
+      return transformedGroup;
+    });
+  };
+
   const onSubmit = (data: any) => {
+    const finalData = { ...data };
+
+    workstation?.questions?.forEach((question) => {
+      if (question.answerType === AnswerTypes.GROUP && question.subQuestions) {
+        finalData[question.id] = transformGroupData(data[question.id]?.groups || [], question.subQuestions);
+      }
+    });
+
     const submittedData = {
       ...userData,
       date: new Date().toISOString(),
-      ...data,
+      ...finalData,
     };
     console.log('Form Data:', submittedData);
   };
@@ -42,29 +64,37 @@ export default function Form() {
   return (
     <BasePage darkStatusBar>
       <Text style={styles.displayName}>{displayName}</Text>
-      <ScrollView contentContainerStyle={styles.container}>
-        {workstation?.questions?.map((item) => {
-          const { possible_answers, ...question } = item;
-          return (
-            <View key={question.id} style={styles.questionContainer}>
-              <Text style={styles.questionTitle}>{question.title}</Text>
-              {question.answer_type.toString() === AnswerTypes.TEXT && (
-                <TextQuestion control={control} questionId={question.id} />
-              )}
-              {question.answer_type === AnswerTypes.YES_NO && (
-                <BooleanQuestion control={control} questionId={question.id} />
-              )}
-              {question.answer_type === AnswerTypes.MULTIPLE_CHOICE && (
-                <MultipleChoiceQuestion control={control} questionId={question.id} possibleAnswers={possible_answers ?? []} />
-              )}
-            </View>
-          );
-        })}
-      </ScrollView>
+      <FormProvider {...methods}>
+        <ScrollView contentContainerStyle={styles.container}>
+          {workstation?.questions?.map((item) => {
+            const { possibleAnswers, subQuestions, ...question } = item;
+            return (
+              <View key={question.id} style={styles.questionContainer}>
+                <Text style={styles.questionTitle}>{question.title}</Text>
+                {question.answerType.toString() === AnswerTypes.TEXT && (
+                  <TextQuestion questionId={question.id} />
+                )}
+                {question.answerType === AnswerTypes.BOOLEAN && (
+                  <BooleanQuestion questionId={question.id} />
+                )}
+                {question.answerType === AnswerTypes.SELECT_ONE && (
+                  <MultipleChoiceQuestion questionId={question.id} possibleAnswers={possibleAnswers ?? []} single={true} />
+                )}
+                {question.answerType === AnswerTypes.SELECT_MULTIPLE && (
+                  <MultipleChoiceQuestion questionId={question.id} possibleAnswers={possibleAnswers ?? []} single={false} />
+                )}
+                {question.answerType === AnswerTypes.GROUP && (
+                  <GroupQuestion questionId={question.id} subQuestions={subQuestions ?? []}/>
+                )}
+              </View>
+            );
+          })}
+        </ScrollView>
 
-      <View>
-        <Button onPress={handleSubmit(onSubmit)} title="Submit" />
-      </View>
+        <View>
+          <Button onPress={handleSubmit(onSubmit)} title="Submit" />
+        </View>
+      </FormProvider>
     </BasePage>
   );
 }
@@ -85,6 +115,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 16,
     borderRadius: 8,
+    zIndex: 1,
   },
   questionTitle: {
     marginBottom: 8,

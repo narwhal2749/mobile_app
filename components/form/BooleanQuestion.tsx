@@ -1,8 +1,10 @@
-import { Controller } from "react-hook-form";
+import { Controller, useFormContext } from "react-hook-form";
 import { View, StyleSheet, Text } from "react-native";
 import { RadioButton } from "react-native-paper";
 
-export const BooleanQuestion = ({ control, questionId }: { control: any, questionId: string }) => {
+export const BooleanQuestion = ({ questionId }: { questionId: string }) => {
+  const { control } = useFormContext();
+
   return (
     <Controller
       control={control}

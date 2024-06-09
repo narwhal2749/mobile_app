@@ -1,7 +1,9 @@
 export enum AnswerTypes {
-    YES_NO = "yesNo",
+    BOOLEAN = "boolean",
     TEXT = "text",
-    MULTIPLE_CHOICE = "multipleChoice"
+    SELECT_MULTIPLE = "select_multiple",
+    SELECT_ONE = "select_one",
+    GROUP = "group",
 } ;
 
 export type PossibleAnswer = {
@@ -9,11 +11,17 @@ export type PossibleAnswer = {
     answer: string;
 }
 
+export type SubQuestion = {
+    id: string;
+    title: string;
+}
+
 export type Question = {
     id: string;
     organizationId: string;
     title: string;
-    answer_type: AnswerTypes;
+    answerType: AnswerTypes;
     workstationIds?: string[];
-    possible_answers?: PossibleAnswer[];
+    possibleAnswers?: PossibleAnswer[];
+    subQuestions?: SubQuestion[]
 }
