@@ -1,13 +1,14 @@
 import { Controller, useFormContext } from "react-hook-form"
 import { TextInput, StyleSheet } from "react-native"
 
-export const TextQuestion = ({questionId}: {questionId: string}) => {
+export const TextQuestion = ({questionId, required}: {questionId: string, required: boolean}) => {
   const { control } = useFormContext();
 
   return (
     <Controller
       control={control}
       name={questionId}
+      rules={{ required: required }}
       render={({ field: { onChange, onBlur, value } }) => (
         <TextInput
           onBlur={onBlur}

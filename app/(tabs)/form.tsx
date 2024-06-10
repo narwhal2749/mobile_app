@@ -10,11 +10,12 @@ import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserData } from './settings';
 import { GroupQuestion } from '@/components/form/GroupQuestion';
+import { SharedStyles } from '@/components/form/SharesStyles';
 
 export default function Form() {
   const {workstation} = useWorkstation();
   const methods = useForm();
-  const { handleSubmit } = methods;
+  const { handleSubmit, formState: {errors} } = methods;
   const [userData, setUserData] = useState<UserData>({firstName: '', lastName: ''});
 
   useEffect(() => {
@@ -36,8 +37,6 @@ export default function Form() {
       const transformedGroup: any = {};
       subQuestions.forEach((subQuestion) => {
         transformedGroup[subQuestion.id] = {id: subQuestion.id, answer: group[subQuestion.id]};
-        console.log("res t", transformedGroup[subQuestion.id]);
-
       });
       return transformedGroup;
     });
@@ -57,7 +56,13 @@ export default function Form() {
       date: new Date().toISOString(),
       ...finalData,
     };
-    console.log('Form Data:', submittedData);
+
+    if(!errors){
+      console.log('Form Data:', submittedData);
+    } else {
+      console.log('Errors:', errors);
+      console.log('Form Data:', submittedData);
+    }
   };
 
   const displayName = `${workstation?.code} - ${workstation?.name}`;
@@ -69,22 +74,22 @@ export default function Form() {
           {workstation?.questions?.map((item) => {
             const { possibleAnswers, subQuestions, ...question } = item;
             return (
-              <View key={question.id} style={styles.questionContainer}>
+              <View key={question.id} style={[styles.questionContainer, errors[question.id] && SharedStyles.error]}>
                 <Text style={styles.questionTitle}>{question.title}</Text>
                 {question.answerType.toString() === AnswerTypes.TEXT && (
-                  <TextQuestion questionId={question.id} />
+                  <TextQuestion questionId={question.id} required={question.required} />
                 )}
                 {question.answerType === AnswerTypes.BOOLEAN && (
-                  <BooleanQuestion questionId={question.id} />
+                  <BooleanQuestion questionId={question.id} required={question.required} />
                 )}
                 {question.answerType === AnswerTypes.SELECT_ONE && (
-                  <MultipleChoiceQuestion questionId={question.id} possibleAnswers={possibleAnswers ?? []} single={true} />
+                  <MultipleChoiceQuestion questionId={question.id} required={question.required} possibleAnswers={possibleAnswers ?? []} single={true} />
                 )}
                 {question.answerType === AnswerTypes.SELECT_MULTIPLE && (
-                  <MultipleChoiceQuestion questionId={question.id} possibleAnswers={possibleAnswers ?? []} single={false} />
+                  <MultipleChoiceQuestion questionId={question.id} required={question.required} possibleAnswers={possibleAnswers ?? []} single={false} />
                 )}
                 {question.answerType === AnswerTypes.GROUP && (
-                  <GroupQuestion questionId={question.id} subQuestions={subQuestions ?? []}/>
+                  <GroupQuestion questionId={question.id} required={question.required} subQuestions={subQuestions ?? []}/>
                 )}
               </View>
             );

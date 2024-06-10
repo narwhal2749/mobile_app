@@ -2,13 +2,14 @@ import { Controller, useFormContext } from "react-hook-form";
 import { View, StyleSheet, Text } from "react-native";
 import { RadioButton } from "react-native-paper";
 
-export const BooleanQuestion = ({ questionId }: { questionId: string }) => {
+export const BooleanQuestion = ({ questionId, required}: { questionId: string, required: boolean }) => {
   const { control } = useFormContext();
 
   return (
     <Controller
       control={control}
       name={questionId}
+      rules={{ required: required }}
       render={({ field: { onChange, value } }) => (
         <RadioButton.Group
           onValueChange={onChange}

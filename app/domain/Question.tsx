@@ -24,4 +24,5 @@ export type Question = {
     workstationIds?: string[];
     possibleAnswers?: PossibleAnswer[];
     subQuestions?: SubQuestion[]
+    required: boolean;
 }

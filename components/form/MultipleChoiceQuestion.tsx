@@ -8,12 +8,14 @@ type MultipleChoiceQuestionProps = {
   questionId: string;
   possibleAnswers: PossibleAnswer[];
   single: boolean;
+  required: boolean;
 };
 
 export const MultipleChoiceQuestion = ({
   questionId,
   possibleAnswers,
   single,
+  required,
 }: MultipleChoiceQuestionProps) => {
   const { control } = useFormContext();
 
@@ -25,6 +27,7 @@ export const MultipleChoiceQuestion = ({
     <Controller
       control={control}
       name={questionId}
+      rules={{ required: required }}
       render={({ field: { onChange, value } }) => (
         <View style={styles.container}>
           <MultiSelect
@@ -37,7 +40,6 @@ export const MultipleChoiceQuestion = ({
             selectedItems={value || []}
             selectText="Pick Items"
             onChangeInput={ (text)=> console.log(text)}
-            altFontFamily="ProximaNova-Light"
             tagRemoveIconColor="#CCC"
             tagBorderColor="#CCC"
             tagTextColor="#CCC"

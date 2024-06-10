@@ -1,26 +1,34 @@
 import { SubQuestion } from '@/app/domain/Question';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useFormContext, useFieldArray, Controller } from 'react-hook-form';
 import { View, Text, Button, TextInput, StyleSheet } from 'react-native';
 
 type GroupQuestionProps = {
   questionId: string;
   subQuestions: SubQuestion[];
+  required: boolean;
 }
 
-export const GroupQuestion = ({ questionId, subQuestions }: GroupQuestionProps) => {
+export const GroupQuestion = ({ questionId, subQuestions, required }: GroupQuestionProps) => {
   const { control } = useFormContext();
   const { fields, append, remove } = useFieldArray({
     control,
     name: `${questionId}.groups`
   });
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const addGroup = () => {
     append(subQuestions.reduce((acc, subQuestion) => {
       acc[subQuestion.id] = '';
       return acc;
     }, {} as Record<string, string>));
   };
+  
+  useEffect(() => {
+    if (fields.length === 0) {
+      addGroup();
+    }
+  }, [addGroup, fields]);
 
   return (
     <View>
@@ -32,6 +40,7 @@ export const GroupQuestion = ({ questionId, subQuestions }: GroupQuestionProps) 
               <Controller
                 control={control}
                 name={`${questionId}.groups[${index}].${subQuestion.id}`}
+                rules={{ required: required }}
                 render={({ field: { onChange, value } }) => (
                   <TextInput
                     style={styles.input}
@@ -42,10 +51,10 @@ export const GroupQuestion = ({ questionId, subQuestions }: GroupQuestionProps) 
               />
             </View>
           ))}
-          <Button title="Remove Group" onPress={() => remove(index)} />
+          <Button title="Remove" onPress={() => remove(index)} />
         </View>
       ))}
-      <Button title="Add Group" onPress={addGroup} />
+      <Button title="Add" onPress={addGroup} />
     </View>
   );
 };
