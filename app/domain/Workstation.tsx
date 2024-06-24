@@ -1,5 +1,9 @@
 import { Question } from "./Question";
 
+export type QuestionGroup = {
+    name: string;
+    questions: Question[];
+}
 export type Workstation = {
     id: string;
     organizationId: string;
@@ -7,4 +11,5 @@ export type Workstation = {
     name: string;
     description?: string;
     questions?: Question[];
+    groups?: QuestionGroup[];
 }

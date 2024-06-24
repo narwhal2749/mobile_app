@@ -3,7 +3,6 @@ export enum AnswerTypes {
     TEXT = "text",
     SELECT_MULTIPLE = "select_multiple",
     SELECT_ONE = "select_one",
-    GROUP = "group",
 } ;
 
 export type PossibleAnswer = {
@@ -11,7 +10,7 @@ export type PossibleAnswer = {
     answer: string;
 }
 
-export type SubQuestion = {
+export type QuestionGroup = {
     id: string;
     title: string;
 }
@@ -23,6 +22,6 @@ export type Question = {
     answerType: AnswerTypes;
     workstationIds?: string[];
     possibleAnswers?: PossibleAnswer[];
-    subQuestions?: SubQuestion[]
+    group: QuestionGroup;
     required: boolean;
 }

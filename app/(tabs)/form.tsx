@@ -1,7 +1,7 @@
 import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useWorkstation } from '../WorkstationProvider';
 import { FormProvider, useForm } from 'react-hook-form';
-import { AnswerTypes, SubQuestion } from '../domain/Question';
+import { AnswerTypes, Question } from '../domain/Question';
 import { TextQuestion } from '@/components/form/TextQuestion';
 import { BooleanQuestion } from '@/components/form/BooleanQuestion';
 import { MultipleChoiceQuestion } from '@/components/form/MultipleChoiceQuestion';
@@ -9,7 +9,6 @@ import { BasePage } from '@/components/BasePage';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserData } from './settings';
-import { GroupQuestion } from '@/components/form/GroupQuestion';
 import { SharedStyles } from '@/components/form/SharesStyles';
 
 export default function Form() {
@@ -32,29 +31,13 @@ export default function Form() {
     loadData();
   }, []);
 
-  const transformGroupData = (data: any, subQuestions: SubQuestion[]) => {
-    return data.map((group: any) => {
-      const transformedGroup: any = {};
-      subQuestions.forEach((subQuestion) => {
-        transformedGroup[subQuestion.id] = {id: subQuestion.id, answer: group[subQuestion.id]};
-      });
-      return transformedGroup;
-    });
-  };
-
   const onSubmit = (data: any) => {
-    const finalData = { ...data };
-
-    workstation?.questions?.forEach((question) => {
-      if (question.answerType === AnswerTypes.GROUP && question.subQuestions) {
-        finalData[question.id] = transformGroupData(data[question.id]?.groups || [], question.subQuestions);
-      }
-    });
+    console.log('Form Data:', data);
 
     const submittedData = {
       ...userData,
       date: new Date().toISOString(),
-      ...finalData,
+      ...data,
     };
 
     if(!errors){
@@ -71,37 +54,49 @@ export default function Form() {
       <Text style={styles.displayName}>{displayName}</Text>
       <FormProvider {...methods}>
         <ScrollView contentContainerStyle={styles.container}>
-          {workstation?.questions?.map((item) => {
-            const { possibleAnswers, subQuestions, ...question } = item;
-            return (
-              <View key={question.id} style={[styles.questionContainer, errors[question.id] && SharedStyles.error]}>
-                <Text style={styles.questionTitle}>{question.title}</Text>
-                {question.answerType.toString() === AnswerTypes.TEXT && (
-                  <TextQuestion questionId={question.id} required={question.required} />
-                )}
-                {question.answerType === AnswerTypes.BOOLEAN && (
-                  <BooleanQuestion questionId={question.id} required={question.required} />
-                )}
-                {question.answerType === AnswerTypes.SELECT_ONE && (
-                  <MultipleChoiceQuestion questionId={question.id} required={question.required} possibleAnswers={possibleAnswers ?? []} single={true} />
-                )}
-                {question.answerType === AnswerTypes.SELECT_MULTIPLE && (
-                  <MultipleChoiceQuestion questionId={question.id} required={question.required} possibleAnswers={possibleAnswers ?? []} single={false} />
-                )}
-                {question.answerType === AnswerTypes.GROUP && (
-                  <GroupQuestion questionId={question.id} required={question.required} subQuestions={subQuestions ?? []}/>
-                )}
-              </View>
-            );
-          })}
+          {workstation?.questions?.map((question) => (
+            <FormQuestion key={question.id} question={question} errors={errors} />
+          ))}
+          {workstation?.groups?.map((group) => (
+            <View key={group.name} style={styles.groupContainer}>
+              <Text style={styles.questionTitle}>{group.name}</Text>
+              {group.questions.map((question) => (
+                <FormQuestion key={question.id} question={question} errors={errors} />
+              ))}
+            </View>
+          ))}
         </ScrollView>
-
         <View>
           <Button onPress={handleSubmit(onSubmit)} title="Submit" />
         </View>
       </FormProvider>
     </BasePage>
   );
+}
+
+interface FormQuestionProps {
+  question: Question;
+  errors: any;
+}
+
+export const FormQuestion = ({ question, errors, }: FormQuestionProps) => {
+  return (
+    <View key={question.id} style={[styles.questionContainer, errors[question.id] && SharedStyles.error]}>
+      <Text style={styles.questionTitle}>{question.title}</Text>
+      {question.answerType.toString() === AnswerTypes.TEXT && (
+        <TextQuestion questionId={question.id} required={question.required} />
+      )}
+      {question.answerType === AnswerTypes.BOOLEAN && (
+        <BooleanQuestion questionId={question.id} required={question.required} />
+      )}
+      {question.answerType === AnswerTypes.SELECT_ONE && (
+        <MultipleChoiceQuestion questionId={question.id} required={question.required} possibleAnswers={question.possibleAnswers ?? []} single={true} />
+      )}
+      {question.answerType === AnswerTypes.SELECT_MULTIPLE && (
+        <MultipleChoiceQuestion questionId={question.id} required={question.required} possibleAnswers={question.possibleAnswers ?? []} single={false} />
+      )}
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -114,6 +109,15 @@ const styles = StyleSheet.create({
     paddingBottom: 16,
   },
   questionContainer: {
+    marginBottom: 16,
+    backgroundColor: '#fff',
+    borderColor: '#000',
+    borderWidth: 1,
+    padding: 16,
+    borderRadius: 8,
+    zIndex: 1,
+  },
+  groupContainer: {
     marginBottom: 16,
     backgroundColor: '#fff',
     borderColor: '#000',

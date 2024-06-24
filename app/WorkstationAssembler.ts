@@ -1,15 +1,29 @@
 import { AnswerTypes } from "./domain/Question";
+import { Workstation } from "./domain/Workstation";
 
-export const assembleWorkstation = (data: any) => ({
+export const assembleWorkstation = (data: any): Workstation =>{
+  console.log("data", data.groups);
+  return {
     ...data,
     questions: data.questions?.map((question: any) => {
-      
       return {
         ...question,
         answerType: getAnswerType(question.answerType),
       }
-    })
-});
+    }),
+    groups: data.groups?.map((group: Record<string, any>) => {
+      return {
+        name: group.name,
+        questions: group.questions?.map((question: any) => {
+          return {
+            ...question,
+            answerType: getAnswerType(question.answerType),
+          }
+        }),
+      }
+    }),
+  };
+} 
 
 const getAnswerType = (answerType: string) => {
   switch (answerType) {
@@ -21,8 +35,6 @@ const getAnswerType = (answerType: string) => {
       return AnswerTypes.SELECT_MULTIPLE;
     case 'SELECT_ONE':
       return AnswerTypes.SELECT_ONE;
-    case 'GROUP':
-      return AnswerTypes.GROUP;
     default:
       return AnswerTypes.TEXT;
   }
