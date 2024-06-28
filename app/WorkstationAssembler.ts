@@ -2,7 +2,6 @@ import { AnswerTypes } from "./domain/Question";
 import { Workstation } from "./domain/Workstation";
 
 export const assembleWorkstation = (data: any): Workstation =>{
-  console.log("data", data.groups);
   return {
     ...data,
     questions: data.questions?.map((question: any) => {

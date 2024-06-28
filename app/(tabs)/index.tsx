@@ -32,7 +32,6 @@ export default function App() {
       router.push('form'); 
     } catch (error) {
       setLoading(false);
-      console.error('Error fetching workstation:', error);
     }
   }
 

@@ -44,7 +44,7 @@ export default function Form() {
       console.log('Form Data:', submittedData);
     } else {
       console.log('Errors:', errors);
-      console.log('Form Data:', submittedData);
+      console.log('Form Data with errr:', submittedData);
     }
   };
 
