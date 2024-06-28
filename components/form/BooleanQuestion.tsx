@@ -1,8 +1,9 @@
 import { Controller, useFormContext } from "react-hook-form";
 import { View, StyleSheet, Text } from "react-native";
 import { RadioButton } from "react-native-paper";
+import Title from "./Title";
 
-export const BooleanQuestion = ({ questionId, required}: { questionId: string, required: boolean }) => {
+export const BooleanQuestion = ({ questionId, title, required }: { questionId: string; title: string; required: boolean }) => {
   const { control } = useFormContext();
 
   return (
@@ -11,11 +12,9 @@ export const BooleanQuestion = ({ questionId, required}: { questionId: string, r
       name={questionId}
       rules={{ required: required }}
       render={({ field: { onChange, value } }) => (
-        <RadioButton.Group
-          onValueChange={onChange}
-          value={value}
-        >
+        <RadioButton.Group onValueChange={onChange} value={value}>
           <View style={styles.container}>
+            <Title title={title}/>
             <View style={styles.radioButtonContainer}>
               <View style={styles.radioButtonWrapper}>
                 <RadioButton value="yes" />
@@ -30,19 +29,16 @@ export const BooleanQuestion = ({ questionId, required}: { questionId: string, r
         </RadioButton.Group>
       )}
     />
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    padding: 8,
   },
   radioButtonContainer: {
+    width: '15%',
     flexDirection: 'column',
-    justifyContent: 'flex-start',
-    alignItems: 'flex-end',
   },
   radioButtonWrapper: {
     flexDirection: 'row',

@@ -1,7 +1,13 @@
 import { Controller, useFormContext } from "react-hook-form"
-import { TextInput, StyleSheet } from "react-native"
+import { TextInput, StyleSheet, View } from "react-native"
+import Title from "./Title";
 
-export const TextQuestion = ({questionId, required}: {questionId: string, required: boolean}) => {
+interface TextQuestionProps {
+  questionId: string;
+  required: boolean;
+  title: string;
+}
+export const TextQuestion = ({questionId, required, title}: TextQuestionProps) => {
   const { control } = useFormContext();
 
   return (
@@ -10,12 +16,15 @@ export const TextQuestion = ({questionId, required}: {questionId: string, requir
       name={questionId}
       rules={{ required: required }}
       render={({ field: { onChange, onBlur, value } }) => (
-        <TextInput
-          onBlur={onBlur}
-          onChangeText={onChange}
-          value={value}
-          style={styles.input}
-        />
+        <View>
+          <Title title={title}/>
+          <TextInput
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            style={styles.input}
+          />
+        </View>
       )}
     />
   )

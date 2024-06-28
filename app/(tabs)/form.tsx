@@ -9,7 +9,7 @@ import { BasePage } from '@/components/BasePage';
 import { useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { UserData } from './settings';
-import { SharedStyles } from '@/components/form/SharesStyles';
+import { SharedStyles } from '@/components/form/styles/SharesStyles';
 
 export default function Form() {
   const {workstation} = useWorkstation();
@@ -82,18 +82,17 @@ interface FormQuestionProps {
 export const FormQuestion = ({ question, errors, }: FormQuestionProps) => {
   return (
     <View key={question.id} style={[styles.questionContainer, errors[question.id] && SharedStyles.error]}>
-      <Text style={styles.questionTitle}>{question.title}</Text>
       {question.answerType.toString() === AnswerTypes.TEXT && (
-        <TextQuestion questionId={question.id} required={question.required} />
+        <TextQuestion title={question.title} questionId={question.id} required={question.required} />
       )}
       {question.answerType === AnswerTypes.BOOLEAN && (
-        <BooleanQuestion questionId={question.id} required={question.required} />
+        <BooleanQuestion title={question.title} questionId={question.id} required={question.required} />
       )}
       {question.answerType === AnswerTypes.SELECT_ONE && (
-        <MultipleChoiceQuestion questionId={question.id} required={question.required} possibleAnswers={question.possibleAnswers ?? []} single={true} />
+        <MultipleChoiceQuestion title={question.title} questionId={question.id} required={question.required} possibleAnswers={question.possibleAnswers ?? []} single={true} />
       )}
       {question.answerType === AnswerTypes.SELECT_MULTIPLE && (
-        <MultipleChoiceQuestion questionId={question.id} required={question.required} possibleAnswers={question.possibleAnswers ?? []} single={false} />
+        <MultipleChoiceQuestion title={question.title}  questionId={question.id} required={question.required} possibleAnswers={question.possibleAnswers ?? []} single={false} />
       )}
     </View>
   )

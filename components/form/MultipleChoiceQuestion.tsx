@@ -3,12 +3,14 @@ import { Controller, useFormContext } from 'react-hook-form';
 import { PossibleAnswer } from '@/app/domain/Question';
 import { StyleSheet, View } from 'react-native';
 import MultiSelect from 'react-native-multiple-select';
+import Title from './Title';
 
 type MultipleChoiceQuestionProps = {
   questionId: string;
   possibleAnswers: PossibleAnswer[];
   single: boolean;
   required: boolean;
+  title: string;
 };
 
 export const MultipleChoiceQuestion = ({
@@ -16,6 +18,7 @@ export const MultipleChoiceQuestion = ({
   possibleAnswers,
   single,
   required,
+  title
 }: MultipleChoiceQuestionProps) => {
   const { control } = useFormContext();
 
@@ -30,6 +33,7 @@ export const MultipleChoiceQuestion = ({
       rules={{ required: required }}
       render={({ field: { onChange, value } }) => (
         <View style={styles.container}>
+          <Title title={title}/>
           <MultiSelect
             hideTags
             items={items}
