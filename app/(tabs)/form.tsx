@@ -61,7 +61,7 @@ export default function Form() {
             <View key={group.name} style={styles.groupContainer}>
               <Text style={styles.questionTitle}>{group.name}</Text>
               {group.questions.map((question) => (
-                <FormQuestion key={question.id} question={question} errors={errors} />
+                <FormQuestion key={question.id} inGroup question={question} errors={errors} />
               ))}
             </View>
           ))}
@@ -77,11 +77,12 @@ export default function Form() {
 interface FormQuestionProps {
   question: Question;
   errors: any;
+  inGroup?: boolean;
 }
 
-export const FormQuestion = ({ question, errors, }: FormQuestionProps) => {
+export const FormQuestion = ({ question, errors, inGroup }: FormQuestionProps) => {
   return (
-    <View key={question.id} style={[styles.questionContainer, errors[question.id] && SharedStyles.error]}>
+    <View key={question.id} style={[inGroup ? styles.groupQuestionContainer: styles.questionContainer, errors[question.id] && SharedStyles.error]}>
       {question.answerType.toString() === AnswerTypes.TEXT && (
         <TextQuestion title={question.title} questionId={question.id} required={question.required} />
       )}
@@ -114,6 +115,14 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     padding: 16,
     borderRadius: 8,
+    zIndex: 1,
+  },
+  groupQuestionContainer: {
+    marginBottom: 16,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#d3d3d3',
     zIndex: 1,
   },
   groupContainer: {
