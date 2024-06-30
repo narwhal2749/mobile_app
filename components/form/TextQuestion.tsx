@@ -3,17 +3,17 @@ import { TextInput, StyleSheet, View } from "react-native"
 import Title from "./Title";
 
 interface TextQuestionProps {
-  questionId: string;
+  name: string;
   required: boolean;
   title: string;
 }
-export const TextQuestion = ({questionId, required, title}: TextQuestionProps) => {
+export const TextQuestion = ({name, required, title}: TextQuestionProps) => {
   const { control } = useFormContext();
 
   return (
     <Controller
       control={control}
-      name={questionId}
+      name={name}
       rules={{ required: required }}
       render={({ field: { onChange, onBlur, value } }) => (
         <View>

@@ -1,6 +1,7 @@
 import { Question } from "./Question";
 
 export type QuestionGroup = {
+    id: string;
     name: string;
     questions: Question[];
 }
