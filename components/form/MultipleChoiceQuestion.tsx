@@ -6,7 +6,7 @@ import MultiSelect from 'react-native-multiple-select';
 import Title from './Title';
 
 type MultipleChoiceQuestionProps = {
-  questionId: string;
+  name: string;
   possibleAnswers: PossibleAnswer[];
   single: boolean;
   required: boolean;
@@ -14,7 +14,7 @@ type MultipleChoiceQuestionProps = {
 };
 
 export const MultipleChoiceQuestion = ({
-  questionId,
+  name,
   possibleAnswers,
   single,
   required,
@@ -29,7 +29,7 @@ export const MultipleChoiceQuestion = ({
   return (
     <Controller
       control={control}
-      name={questionId}
+      name={name}
       rules={{ required: required }}
       render={({ field: { onChange, value } }) => (
         <View style={styles.container}>

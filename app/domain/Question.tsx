@@ -10,18 +10,13 @@ export type PossibleAnswer = {
     answer: string;
 }
 
-export type QuestionGroup = {
-    id: string;
-    title: string;
-}
-
 export type Question = {
+    [x: string]: any;
     id: string;
     organizationId: string;
     title: string;
     answerType: AnswerTypes;
     workstationIds?: string[];
     possibleAnswers?: PossibleAnswer[];
-    group: QuestionGroup;
     required: boolean;
 }

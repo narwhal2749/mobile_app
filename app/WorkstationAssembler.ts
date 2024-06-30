@@ -12,6 +12,7 @@ export const assembleWorkstation = (data: any): Workstation =>{
     }),
     groups: data.groups?.map((group: Record<string, any>) => {
       return {
+        id: group.id,
         name: group.name,
         questions: group.questions?.map((question: any) => {
           return {
