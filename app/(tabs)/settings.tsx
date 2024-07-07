@@ -1,39 +1,21 @@
-import React, { useEffect } from 'react';
-import { Button, TextInput, View, StyleSheet, Alert } from 'react-native';
+import React, { useMemo } from 'react';
+import { Button, TextInput, View, StyleSheet } from 'react-native';
 import { useForm, Controller } from 'react-hook-form';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-export interface UserData {
-  firstName: string;
-  lastName: string;
-}
+import { UserData, useUser } from '../UserProvider';
 
 export default function SettingsScreen() {
   const { control, handleSubmit, reset } = useForm<UserData>();
-
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const firstName = await AsyncStorage.getItem('firstName');
-        const lastName = await AsyncStorage.getItem('lastName');
-        if (firstName || lastName) {
-          reset({ firstName: firstName || '', lastName: lastName || '' });
-        }
-      } catch (e) {
-        Alert.alert('Error', 'Failed to load data');
-      }
-    };
-
-    loadData();
-  }, [reset]);
+  const { userData, setUserData } = useUser();
+  
+  useMemo(() => {
+    reset(userData);
+  }, [userData]);
 
   const handleSave = async (data: UserData) => {
-    try {
-      await AsyncStorage.setItem('firstName', data.firstName);
-      await AsyncStorage.setItem('lastName', data.lastName);
-    } catch (e: any) {
-      Alert.alert('Failed to save data', e);
-    }
+    await AsyncStorage.setItem('firstName', data.firstName);
+    await AsyncStorage.setItem('lastName', data.lastName);
+    setUserData({ firstName: data.firstName, lastName: data.lastName })
   };
 
   return (
@@ -41,6 +23,7 @@ export default function SettingsScreen() {
       <Controller
         control={control}
         name="firstName"
+        rules={{ required: true }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
             placeholder="First Name"
@@ -54,6 +37,7 @@ export default function SettingsScreen() {
       <Controller
         control={control}
         name="lastName"
+        rules={{ required: true }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
             placeholder="Last Name"
