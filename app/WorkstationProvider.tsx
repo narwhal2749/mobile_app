@@ -18,7 +18,7 @@ export const useWorkstation = () => {
   }
   
   const fetchWorkstation = async (url: string) => {
-    const localIP = "http://192.168.2.20:5000";
+    const localIP = "http://192.168.18.5:5000";
     const correctedUrl = url.replace("http://localhost:5000", localIP);
 
     try {
