@@ -1,10 +1,10 @@
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
-import { AnswerTypes, Question } from '../domain/Question';
-import { TextQuestion } from '@/components/form/TextQuestion';
-import { BooleanQuestion } from '@/components/form/BooleanQuestion';
-import { MultipleChoiceQuestion } from '@/components/form/MultipleChoiceQuestion';
-import { SharedStyles } from '@/components/form/styles/SharesStyles';
+import { AnswerTypes, Question } from '../../domain/Question';
+import { TextQuestion } from '@/app/form/components/TextQuestion';
+import { BooleanQuestion } from '@/app/form/components/BooleanQuestion';
+import { MultipleChoiceQuestion } from '@/app/form/components/MultipleChoiceQuestion';
+import { SharedStyles } from '@/app/form/components/styles/SharesStyles';
 
 interface FormQuestionProps {
   question: Question;

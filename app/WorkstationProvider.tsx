@@ -2,6 +2,7 @@ import React, { PropsWithChildren, createContext, useContext } from 'react';
 import { Workstation } from './domain/Workstation';
 import { useAxios } from './HttpProvider';
 import { assembleWorkstation } from './WorkstationAssembler';
+import {API_URL} from '@env';
 
 interface WorkstationProviderProps {
   workstation?: Workstation;
@@ -18,8 +19,7 @@ export const useWorkstation = () => {
   }
   
   const fetchWorkstation = async (url: string) => {
-    const localIP = "http://192.168.18.5:5000";
-    const correctedUrl = url.replace("http://localhost:5000", localIP);
+    const correctedUrl = url.replace("http://localhost:5000", API_URL);
 
     try {
       const response = await queryClient.get(correctedUrl);

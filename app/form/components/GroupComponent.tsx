@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { Button, StyleSheet, Text, View } from 'react-native';
 import { useFieldArray } from 'react-hook-form';
-import { QuestionGroup } from '../domain/Workstation';
+import { QuestionGroup } from '../../domain/Workstation';
 import { FormQuestion } from './FormQuestion';
 
 interface GroupComponentProps { 
