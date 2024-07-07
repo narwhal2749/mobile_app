@@ -1,15 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { Alert, Button, ScrollView, StyleSheet, Text, View } from 'react-native';
+import React from 'react';
+import { Button, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { FormProvider, useForm } from 'react-hook-form';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BasePage } from '@/components/BasePage';
 import { Workstation } from '@/app/domain/Workstation';
-import { UserData } from '@/app/(tabs)/settings';
 import { FormQuestion } from './FormQuestion';
 import { GroupComponent } from './GroupComponent';
 import { useSubmitForm } from '../hooks/useSubmitForm';
 import 'react-native-get-random-values';
 import { v4 } from 'uuid';
+import { useUser } from '@/app/UserProvider';
 
 type FormData = {
   groups: Record<string, any>[];
@@ -23,21 +22,8 @@ interface FormProps {
 export default function FormPage({workstation}: FormProps) {
   const methods = useForm<FormData>();
   const { handleSubmit, formState: { errors }, control, register } = methods;
-  const [userData, setUserData] = useState<UserData>({ firstName: '', lastName: '' });
+  const { userData } = useUser();
   const { submitForm } = useSubmitForm();
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        const firstName = await AsyncStorage.getItem('firstName');
-        const lastName = await AsyncStorage.getItem('lastName');
-        setUserData({ firstName: firstName ?? '', lastName: lastName ?? '' });
-      } catch (e: any) {
-        Alert.alert('Failed to load data', e.message);
-      }
-    };
-
-    loadData();
-  }, []);
 
   const onSubmit = (data: FormData) => {
     const { groups, ...rest } = data;
