@@ -43,6 +43,7 @@ export default function FormPage({workstation}: FormProps) {
     const { groups, ...rest } = data;
     try {
       const submittedData = {
+        //make sure the id stays the same or prevent multiple submissions
         id: v4(),
         workstationId: workstation.id,
         user: {
