@@ -12,7 +12,6 @@ interface UserContextProps {
   userData: UserData;
   setUserData: React.Dispatch<React.SetStateAction<UserData>>;
 }
-
 const UserContext = createContext<UserContextProps | undefined>(undefined);
 
 export const useUser = () => {
